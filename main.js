@@ -55,98 +55,55 @@ gameOver = document.querySelector(".finish")
 maxScore.textContent = words.length;
 scoreAttempts = 0;
 
+const timerOptions = [6, 3, 4];
+const easyModeTimer = timerOptions[0];
+const mediumModeTimer = timerOptions[1];
+const hardModeTimer = timerOptions[2];
+seconds.innerHTML = mediumModeTimer;
+
+let modes = ["Easy", "medium", "hard"];
+message.innerHTML = modes[Math.floor(Math.random() * modes.length)];
+timer.innerHTML = seconds.innerHTML;
 
 
 startBtn.addEventListener("click", () => {
     startBtn.remove();
     startPlay()
 });
-
-function startPlay (){
+function startPlay(){
     input.focus()
-    // Settings 
+    startBtn.remove()
+    handleTimeOut()
     generateWords()
-    let levels = ["Easy", "Medium", "Hard"]
-    randomIndex = Math.floor(Math.random() * levels.length);
-    message.innerHTML = levels[randomIndex]
-    if(levels[randomIndex] === "Easy"){
-        myValueEasySenario();
-    } else if (levels[randomIndex] === "Medium") {
-        myValueMediumSenario();
-    }
-    else{
-        myValueHardSenario()
-    }
-    words.forEach((e, index)=> {
+    for (let i = 0; i < words.length; i++){
         let myDiv = document.createElement("div");
-        myDiv.innerHTML = words[index];
+        myDiv.textContent = words[i];
         wordsContainer.appendChild(myDiv);
-    })
-};
-function myValueEasySenario(){
-    document.addEventListener("keyup", (e) =>{
-        if (e.key === "Enter" ){
-            if(input.value.toLowerCase() === myWord.innerHTML.toLowerCase()){
-                scoreAttempts++
-                result.innerHTML = scoreAttempts
-                myWord.innerHTML = ''
-                input.value = ''
-                if(words.length > 0){
-                    generateWords()
-                }
-            }else{
-                bad()
-            }
-        }
-    });
-};
-function myValueMediumSenario(){
-    document.addEventListener("keyup", (e) =>{
-        if (e.key === "Enter" ){
-            if(input.value.toLowerCase() === myWord.innerHTML.toLowerCase()){
-                scoreAttempts++
-                result.innerHTML = scoreAttempts
-                myWord.innerHTML = ''
-                input.value = ''
-                if(words.length > 0){
-                    generateWords()
-                }
-            }else{
-                bad()
-            }
-        }
-    });
-};
-function myValueHardSenario(){
-    document.addEventListener("keyup", (e) =>{
-        if (e.key === "Enter" ){
-            if(input.value === myWord.innerHTML){
-                scoreAttempts++
-                result.innerHTML = scoreAttempts
-                myWord.innerHTML = ''
-                input.value = ''
-                if(words.length > 0){
-                    generateWords()
-                }
-            }else{
-                bad()
-            }
-        }
-    });
-};
-function good(){
-    input.disabled = true
-    myWord.remove();
-    let mySpan = document.createElement("span");
-    mySpan.classList.add("good")
-    mySpan.textContent = `Congrats u did great`
-    gameOver.appendChild(mySpan);
+    }
 }
-function bad(){
-    input.disabled = true
-    myWord.remove();
-    let mySpan = document.createElement("span");
-    mySpan.classList.add("bad");
-    mySpan.textContent = `Game Over`
-    gameOver.appendChild(mySpan);
-};
+function handleTimeOut(){    
+    let myInterval = setInterval(() => {
+        timer.innerHTML--;
+        if(timer.innerHTML === "0" || parseInt(timer.innerHTML) <= 0){
+            timer.innerHTML = 4
+            if(input.value.toLowerCase() === myWord.innerHTML.toLowerCase()){
+                scoreAttempts++;
+                result.innerHTML = scoreAttempts;
+                myWord.innerHTML = '';
+                input.value = '';
+                generateWords()
+            }else{
+                if (parseInt(result.innerHTML) >= 25){
+                    gameOver.innerHTML = `<span class="perfect">Game Over</span>`
+                }else if (parseInt(result.innerHTML) >= 12 && parseInt(result.innerHTML) < 25){
+                    gameOver.innerHTML = `<span class="good">Game Over</span>`
+                }else if(parseInt(result.innerHTML) >= 0){
+                    gameOver.innerHTML = `<span class="bad">Game Over</span>`
+                }
+                clearInterval(myInterval)
+                timer.innerHTML = "D:"
+                input.disabled = true
+            };
+        }
+    }, 1000);
+}
